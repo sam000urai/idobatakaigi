@@ -12,7 +12,7 @@ const Login = () => {
     const handleClick = async () => {
         const result = await signInUser(email, password);
         if (result === "success") {
-            navigate('/main');
+            navigate('/room');
         } else {
             setError("ログインに失敗しました。");
         }
@@ -21,7 +21,7 @@ const Login = () => {
     const handleGoogleSignIn = async () => {
         const result = await signInWithGoogle();
         if (result === "success") {
-            navigate('/main');
+            navigate('/room');
         } else {
             setError("Googleログインに失敗しました。");
         }
