@@ -1,7 +1,7 @@
 import { getApps, initializeApp } from 'firebase/app';
 import {
     collection, query, getDocs, setDoc, addDoc, where,
-    getFirestore, updateDoc, doc, deleteDoc
+    getFirestore, updateDoc, doc, deleteDoc, onSnapshot,
 } from "firebase/firestore";
 import {
     createUserWithEmailAndPassword,
@@ -11,7 +11,6 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
 } from 'firebase/auth';
-
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -32,6 +31,8 @@ if (!apps.length) {
 const auth = getAuth();
 const googleAuthProvider = new GoogleAuthProvider();
 
+const firestore = getFirestore(); // Firestoreのインスタンスを取得
+
 
 export { auth, createUserWithEmailAndPassword };
 
@@ -45,6 +46,17 @@ export const createUser = async (email, password) => {
         const user = userCredential.user;
         console.log(user);
         console.log('create user success!!');
+
+        // Firestoreにユーザー情報を保存
+        const userRef = doc(firestore, "users", user.uid); // usersコレクションの参照を取得
+        await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoUrl: user.photoURL,
+            // 他に保存したい情報があればここに追加
+        });
+
         return 'success';
     } catch (error) {
         console.log(error.message);
@@ -52,6 +64,27 @@ export const createUser = async (email, password) => {
     }
 };
 
+export const getOnlineUsersRealtime = (callback) => {
+    const usersCollection = collection(firestore, "users");
+    return onSnapshot(usersCollection, (snapshot) => {
+        const users = [];
+        snapshot.forEach((doc) => {
+            users.push({ id: doc.id, ...doc.data() });
+        });
+        callback(users);
+    });
+};
+
+export const getUsers = async () => {
+    const db = getFirestore();
+    const usersCol = collection(db, "users");
+    const usersSnapshot = await getDocs(usersCol);
+    const usersList = usersSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    }));
+    return usersList;
+};
 
 export const signOutUser = async () => {
     try {
@@ -184,4 +217,3 @@ export const deleteData = async (id) => {
         console.error("Error removing document: ", error);
     }
 };
-

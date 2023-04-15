@@ -1,14 +1,23 @@
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInUser, signInWithGoogle } from '../plugins/firebase';
+import { useLoginCheck } from '../hooks/useLoginCheck';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    const isUser = useLoginCheck();
+    useEffect(() => {
+        if (isUser) {
+            navigate('/room');
+        }
+    }, [isUser, navigate]);
+
     const handleClick = async () => {
         const result = await signInUser(email, password);
         if (result === "success") {

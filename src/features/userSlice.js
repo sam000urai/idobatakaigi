@@ -7,6 +7,7 @@ const initialState = {
     displayName: '',
     photoUrl: '',
   },
+  loggedInUsers: [], // ログインしているユーザー一覧を追加
 };
 
 export const userSlice = createSlice({

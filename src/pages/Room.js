@@ -24,44 +24,6 @@ const Room = () => {
         setBirthYear(event.target.value);
     };
 
-    const handleCreateData = async () => {
-        console.log('start')
-    };
-
-
-    const createFunc = async () => {
-        console.log('start')
-        const res = await createDataInFirebase()
-        console.log('fin', res)
-    }
-
-    const read = async () => {
-        console.log("read")
-        await readData()
-    }
-
-    const readcollection = async () => {
-        console.log("users")
-        await readCollection()
-    }
-
-    const handleUpdate = async () => {
-        await updateData();
-    };
-
-    const handleCreate = async () => {
-        await myDataCreateInFirebase(firstName, lastName, birthYear);
-    };
-
-    const handleNewCreate = async () => {
-        await newCreateInFirebase(firstName, lastName, birthYear);
-    };
-
-    const handleDelete = async (id) => {
-        await deleteData(id);
-    }
-
-
     useEffect(() => {
         const auth = getAuth();
         onAuthStateChanged(auth, (user) => {
@@ -79,6 +41,9 @@ const Room = () => {
         signOutUser()
     };
 
+    const navigateToCreateRoom = () => {
+        navigate('/createroom');
+    };
 
     return (
         <div>
@@ -99,7 +64,9 @@ const Room = () => {
             <Button variant="outlined" onClick={handleClick}>
                 ログアウト
             </Button>
-
+            <Button variant="outlined" onClick={navigateToCreateRoom}>
+                新規Room作成
+            </Button>
         </div>
     );
 };
