@@ -23,16 +23,15 @@ const firebaseConfig = {
     appId: process.env.REACT_APP_APP_ID,
 };
 
+
 const apps = getApps;
 if (!apps.length) {
     initializeApp(firebaseConfig);
 }
+const firestore = getFirestore(); // Firestoreのインスタンスを取得
 
 const auth = getAuth();
 const googleAuthProvider = new GoogleAuthProvider();
-
-const firestore = getFirestore(); // Firestoreのインスタンスを取得
-
 
 export { auth, createUserWithEmailAndPassword };
 
@@ -62,6 +61,23 @@ export const createUser = async (email, password) => {
         console.log(error.message);
         return 'failed';
     }
+};
+
+export const createRoom = async (selectedUsers) => {
+    // チャットルームを作成する処理
+    const chatRoomRef = await firestore.collection("chatRooms").add({
+        createdAt: getFirestore.FieldValue.serverTimestamp(),
+        memberIds: selectedUsers.map((user) => user.id),
+    });
+    const chatRoomId = chatRoomRef.id;
+    selectedUsers.forEach((user) => {
+        firestore
+            .collection("users")
+            .doc(user.id)
+            .update({
+                chatRoomIds: getFirestore.FieldValue.arrayUnion(chatRoomId),
+            });
+    });
 };
 
 export const getOnlineUsersRealtime = (callback) => {

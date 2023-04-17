@@ -15,7 +15,7 @@ function App() {
         <Route exact path="/" element={<Login />} />
         <Route path="/createUser" element={<CreateUser />} />
         <Route path="/room" element={<Room />} />
-        <Route path="/createroom" element={CreateRoom} /> {/* ルート追加 */}
+        <Route path="/createroom" element={<CreateRoom />} /> {/* ルート追加 */}
       </Routes>
     </BrowserRouter>
   );

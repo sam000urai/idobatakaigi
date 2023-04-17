@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { getOnlineUsersRealtime } from "../plugins/firebase";
+import { createRoom, getOnlineUsersRealtime } from "../plugins/firebase";
 import { useLoginCheck } from "../hooks/useLoginCheck";
 
 const CreateRoom = () => {
     const [onlineUsers, setOnlineUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
     const isLoggedIn = useLoginCheck();
 
     useEffect(() => {
@@ -13,6 +14,18 @@ const CreateRoom = () => {
         };
     }, []);
 
+    const handleUserSelect = (user) => {
+        if (selectedUsers.includes(user)) {
+            setSelectedUsers(selectedUsers.filter((selectedUser) => selectedUser !== user));
+        } else {
+            setSelectedUsers([...selectedUsers, user]);
+        }
+    };
+
+    const handleCreateRoom = () => {
+        createRoom(selectedUsers);
+    };
+
     return (
         <div>
             <h1>Create Room</h1>
@@ -20,11 +33,16 @@ const CreateRoom = () => {
             <ul>
                 {onlineUsers.map((user) => (
                     <li key={user.id}>
+                        <input type="checkbox" checked={selectedUsers.includes(user)} onChange={() => handleUserSelect(user)} />
                         {user.displayName} ({user.email})
                     </li>
                 ))}
             </ul>
-            {isLoggedIn ? <p>ログイン中</p> : <p>ログアウト</p>}
+            {isLoggedIn ? (
+                <button onClick={handleCreateRoom}>Create Room</button>
+            ) : (
+                <p>ログアウト</p>
+            )}
         </div>
     );
 };
