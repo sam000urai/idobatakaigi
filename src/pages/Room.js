@@ -1,28 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Button from '@mui/material/Button';
+import Layout from '../components/Layout';
+import RoomCard from '../components/RoomCard';
+import '../styles/Room.css';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc, getFirestore } from "firebase/firestore";
 import { createDataInFirebase, readData, readCollection, updateData, deleteData, signOutUser, myDataCreateInFirebase, newCreateInFirebase } from '../plugins/firebase';
 
 const Room = () => {
     const [user, setUser] = useState(null);
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [birthYear, setBirthYear] = useState('');
     const navigate = useNavigate();
-
-    const handleFirstNameChange = (event) => {
-        setFirstName(event.target.value);
-    };
-
-    const handleLastNameChange = (event) => {
-        setLastName(event.target.value);
-    };
-
-    const handleBirthYearChange = (event) => {
-        setBirthYear(event.target.value);
-    };
 
     useEffect(() => {
         const auth = getAuth();
@@ -47,26 +34,24 @@ const Room = () => {
 
     return (
         <div>
-            <h1>Room作成</h1>
-            <p>{user?.email}でログイン中</p>
-            <label>
-                First Name:
-                <input type="text" value={firstName} onChange={handleFirstNameChange} />
-            </label>
-            <label>
-                Last Name:
-                <input type="text" value={lastName} onChange={handleLastNameChange} />
-            </label>
-            <label>
-                Birth Year:
-                <input type="text" value={birthYear} onChange={handleBirthYearChange} />
-            </label>
-            <Button variant="outlined" onClick={handleClick}>
-                ログアウト
-            </Button>
-            <Button variant="outlined" onClick={navigateToCreateRoom}>
-                新規Room作成
-            </Button>
+            <Layout>
+                <h1>Room作成</h1>
+                <p>{user?.email}でログイン中</p>
+                <main className="cardArea">
+                    <RoomCard rid="1" rname="test1" />
+                    <RoomCard rid="2" rname="test2" />
+                    <RoomCard rid="3" rname="test3" />
+                    <RoomCard rid="4" rname="test4" />
+                    <RoomCard rid="5" rname="test5" />
+                    <RoomCard rid="6" rname="test6" />
+                </main>
+                <Button variant="outlined" onClick={handleClick}>
+                    ログアウト
+                </Button>
+                <Button variant="outlined" onClick={navigateToCreateRoom}>
+                    新規Room作成
+                </Button>
+            </Layout>
         </div>
     );
 };

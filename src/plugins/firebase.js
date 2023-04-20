@@ -1,7 +1,7 @@
 import { getApps, initializeApp } from 'firebase/app';
 import {
     collection, query, getDocs, setDoc, addDoc, where,
-    getFirestore, updateDoc, doc, deleteDoc, onSnapshot,
+    getFirestore, updateDoc, doc, deleteDoc, usersSnapshot,
 } from "firebase/firestore";
 import {
     createUserWithEmailAndPassword,
@@ -80,15 +80,18 @@ export const createRoom = async (selectedUsers) => {
     });
 };
 
-export const getOnlineUsersRealtime = (callback) => {
-    const usersCollection = collection(firestore, "users");
-    return onSnapshot(usersCollection, (snapshot) => {
-        const users = [];
-        snapshot.forEach((doc) => {
-            users.push({ id: doc.id, ...doc.data() });
-        });
-        callback(users);
-    });
+export const getAllUsers = async () => {
+    try {
+        const onSnapshot = await firestore.collection("users").get();
+        const users = onSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+        return users;
+    } catch (error) {
+        console.log("Error getting users", error);
+        return [];
+    }
 };
 
 export const getUsers = async () => {
