@@ -4,6 +4,7 @@ import './App.css';
 import CreateUser from './pages/CreateUser';
 import Login from './pages/Login';
 import Room from './pages/Room';
+import Chat from './pages/Chat';
 import CreateRoom from './pages/CreateRoom'; // インポート追加
 
 console.log('API Key:', process.env.REACT_APP_API_KEY);
@@ -16,6 +17,7 @@ function App() {
         <Route path="/createUser" element={<CreateUser />} />
         <Route path="/room" element={<Room />} />
         <Route path="/createroom" element={<CreateRoom />} /> {/* ルート追加 */}
+        <Route path="/chat/:id" element={<Chat />} />
       </Routes>
     </BrowserRouter>
   );

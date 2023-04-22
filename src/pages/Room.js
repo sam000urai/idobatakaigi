@@ -5,9 +5,10 @@ import Layout from '../components/Layout';
 import RoomCard from '../components/RoomCard';
 import '../styles/Room.css';
 import { useNavigate } from 'react-router-dom';
-import { createDataInFirebase, readData, readCollection, updateData, deleteData, signOutUser, myDataCreateInFirebase, newCreateInFirebase } from '../plugins/firebase';
+import { createDataInFirebase, readData, readCollection, updateData, deleteData, signOutUser, myDataCreateInFirebase, newCreateInFirebase, getRooms } from '../plugins/firebase';
 
 const Room = () => {
+    const [roomsList, setRoomsList] = useState([]);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
@@ -24,6 +25,14 @@ const Room = () => {
         });
     }, []);
 
+    useEffect(() => {
+        const fetchRooms = async () => {
+            const rooms = await getRooms();
+            setRoomsList(rooms);
+        };
+        fetchRooms();
+    }, []);
+
     const handleClick = () => {
         signOutUser()
     };
@@ -38,12 +47,10 @@ const Room = () => {
                 <h1>Room作成</h1>
                 <p>{user?.email}でログイン中</p>
                 <main className="cardArea">
-                    <RoomCard rid="1" rname="test1" />
-                    <RoomCard rid="2" rname="test2" />
-                    <RoomCard rid="3" rname="test3" />
-                    <RoomCard rid="4" rname="test4" />
-                    <RoomCard rid="5" rname="test5" />
-                    <RoomCard rid="6" rname="test6" />
+                    <h1>Rooms List</h1>
+                    {roomsList.map((room) => (
+                        <RoomCard rid={room.id} rname={room.name} />
+                    ))}
                 </main>
                 <Button variant="outlined" onClick={handleClick}>
                     ログアウト
@@ -52,7 +59,7 @@ const Room = () => {
                     新規Room作成
                 </Button>
             </Layout>
-        </div>
+        </div >
     );
 };
 

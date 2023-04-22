@@ -8,7 +8,7 @@ import { signOutUser } from '../plugins/firebase';
 const CreateRoom = () => {
     const [users, setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
-    console.log(selectedUsers)
+    const [roomName, setRoomName] = useState('');
     const isLoggedIn = useLoginCheck();
 
     useEffect(() => {
@@ -18,7 +18,6 @@ const CreateRoom = () => {
         };
         fetchUsers();
     }, []);
-
 
     const handleUserSelect = (user) => {
         if (selectedUsers.includes(user)) {
@@ -30,9 +29,17 @@ const CreateRoom = () => {
 
     const handleCreateRoom = async () => {
         console.log(selectedUsers)
-        const roomId = await createRoom(selectedUsers);
+        const roomData = {
+            name: roomName,
+            users: selectedUsers
+        };
+        const roomId = await createRoom(selectedUsers, roomName);
         // チャットルーム作成後に、作成されたルームに遷移する処理を実装する
     };
+
+    const handleRoomNameChange = (event) => {
+        setRoomName(event.target.value);
+    }
 
     const handleClick = () => {
         signOutUser()
@@ -57,6 +64,9 @@ const CreateRoom = () => {
                             </li>
                         ))}
                     </ul>
+                    <div>
+                        <input type="text" placeholder="Room name" value={roomName} onChange={handleRoomNameChange} />
+                    </div>
                     {isLoggedIn ? (
                         <button onClick={handleCreateRoom}>Create Room</button>
                     ) : (

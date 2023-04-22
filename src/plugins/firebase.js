@@ -1,7 +1,7 @@
 import { getApps, initializeApp } from 'firebase/app';
 import {
     collection, query, getDocs, setDoc, addDoc, where,
-    getFirestore, updateDoc, doc, deleteDoc, usersSnapshot,
+    getFirestore, updateDoc, doc, deleteDoc, usersSnapshot, serverTimestamp,
 } from "firebase/firestore";
 import {
     createUserWithEmailAndPassword,
@@ -63,20 +63,12 @@ export const createUser = async (email, password) => {
     }
 };
 
-export const createRoom = async (selectedUsers) => {
+export const createRoom = async (selectedUsers, roomName) => {
     // チャットルームを作成する処理
-    const chatRoomRef = await firestore.collection("rooms").add({
-        createdAt: getFirestore.FieldValue.serverTimestamp(),
+    const chatRoomRef = await addDoc(collection(db, "rooms"), {
+        name: roomName,
+        createdAt: serverTimestamp(),
         memberIds: selectedUsers.map((user) => user.uid),
-    });
-    const chatRoomId = chatRoomRef.id;
-    selectedUsers.forEach((user) => {
-        firestore
-            .collection("users")
-            .doc(user.id)
-            .update({
-                chatRoomIds: getFirestore.FieldValue.arrayUnion(chatRoomId),
-            });
     });
 };
 
@@ -103,6 +95,17 @@ export const getUsers = async () => {
         ...doc.data(),
     }));
     return usersList;
+};
+
+export const getRooms = async () => {
+    const db = getFirestore();
+    const roomsCol = collection(db, "rooms");
+    const roomsSnapshot = await getDocs(roomsCol);
+    const roomsList = roomsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    }));
+    return roomsList;
 };
 
 export const signOutUser = async () => {
