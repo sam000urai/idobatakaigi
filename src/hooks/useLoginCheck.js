@@ -6,6 +6,7 @@ import { auth } from '../plugins/firebase';
 export const useLoginCheck = () => {
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     const unSub = auth.onAuthStateChanged((authUser) => {
       if (authUser) {

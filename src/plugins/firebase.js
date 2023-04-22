@@ -65,9 +65,9 @@ export const createUser = async (email, password) => {
 
 export const createRoom = async (selectedUsers) => {
     // チャットルームを作成する処理
-    const chatRoomRef = await firestore.collection("chatRooms").add({
+    const chatRoomRef = await firestore.collection("rooms").add({
         createdAt: getFirestore.FieldValue.serverTimestamp(),
-        memberIds: selectedUsers.map((user) => user.id),
+        memberIds: selectedUsers.map((user) => user.uid),
     });
     const chatRoomId = chatRoomRef.id;
     selectedUsers.forEach((user) => {
@@ -81,17 +81,17 @@ export const createRoom = async (selectedUsers) => {
 };
 
 export const getAllUsers = async () => {
-    try {
-        const onSnapshot = await firestore.collection("users").get();
-        const users = onSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-        return users;
-    } catch (error) {
-        console.log("Error getting users", error);
-        return [];
-    }
+    let users = []
+    const q = query(collection(db, "users"))
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        users.push(doc.data());
+    });
+    console.log(users)
+    return users;
 };
 
 export const getUsers = async () => {
@@ -202,37 +202,3 @@ export const newCreateInFirebase = async (firstName, lastName, birthYear) => {
     return returnObj
 }
 
-export const readData = async () => {
-    console.log('readData')
-    const q = query(collection(db, "users"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-    });
-};
-
-export const readCollection = async () => {
-    const q = query(collection(db, "users"), where("born", "==", 1815));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-    });
-};
-
-export const updateData = async () => {
-    const washingtonRef = doc(db, "users", "ApmqI2r81wu1HDkyyElY");
-    await updateDoc(washingtonRef, {
-        first: true
-    });
-};
-
-
-export const deleteData = async (id) => {
-    try {
-        const docRef = doc(db, "users", "8RkhaRawZtbyK2gH5k8u");
-        await deleteDoc(docRef);
-        console.log("Document successfully deleted!");
-    } catch (error) {
-        console.error("Error removing document: ", error);
-    }
-};

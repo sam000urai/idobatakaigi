@@ -3,11 +3,12 @@ import { createRoom, getAllUsers } from "../plugins/firebase";
 import { useLoginCheck } from "../hooks/useLoginCheck";
 import Button from '@mui/material/Button';
 import Layout from '../components/Layout';
-import RoomCard from '../components/RoomCard';
+import { signOutUser } from '../plugins/firebase';
 
 const CreateRoom = () => {
     const [users, setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    console.log(selectedUsers)
     const isLoggedIn = useLoginCheck();
 
     useEffect(() => {
@@ -18,6 +19,7 @@ const CreateRoom = () => {
         fetchUsers();
     }, []);
 
+
     const handleUserSelect = (user) => {
         if (selectedUsers.includes(user)) {
             setSelectedUsers(selectedUsers.filter((selectedUser) => selectedUser !== user));
@@ -26,8 +28,14 @@ const CreateRoom = () => {
         }
     };
 
-    const handleCreateRoom = () => {
-        createRoom(selectedUsers);
+    const handleCreateRoom = async () => {
+        console.log(selectedUsers)
+        const roomId = await createRoom(selectedUsers);
+        // チャットルーム作成後に、作成されたルームに遷移する処理を実装する
+    };
+
+    const handleClick = () => {
+        signOutUser()
     };
 
 
@@ -54,6 +62,10 @@ const CreateRoom = () => {
                     ) : (
                         <p>ログアウト</p>
                     )}
+
+                    <Button variant="outlined" onClick={handleClick}>
+                        ログアウト
+                    </Button>
                 </main>
             </Layout>
         </div>

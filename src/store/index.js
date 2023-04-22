@@ -2,6 +2,7 @@ import React, { useReducer, createContext } from 'react'
 import reducer from '../reducers/index'
 import firebase from 'firebase/app';
 import "firebase/firestore";
+import './plugins/firebase';
 
 const initialState = {
     user_data: []
