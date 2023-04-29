@@ -74,13 +74,22 @@ export const createRoom = async (selectedUsers, roomName) => {
     });
 };
 
-export const messagesCreate = async (selectedUsers, messages) => {
-    // チャットルームを作成する処理
-    const messagesCreateRef = await addDoc(collection(db, "messages"), {
-        name: messages,
-        createdAt: serverTimestamp(),
-        memberIds: selectedUsers.map((user) => user.uid),
-    });
+
+export const sendMessageForFirebase = async (message, uid, roomId) => {
+    let returnObj = '';
+    try {
+        const docRef = await addDoc(collection(db, 'messages', roomId, 'message'), {
+            message,
+            user: uid,
+            createdAt: serverTimestamp(),
+        });
+        returnObj = 'send success';
+        console.log('Document written with ID: ', docRef.id);
+    } catch (e) {
+        returnObj = 'error';
+        console.error('Error adding document: ', e);
+    }
+    return returnObj;
 };
 
 export const getAllUsers = async () => {
@@ -216,4 +225,5 @@ export const newCreateInFirebase = async (firstName, lastName, birthYear) => {
     }
     return returnObj
 }
+
 
