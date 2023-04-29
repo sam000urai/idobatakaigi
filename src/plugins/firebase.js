@@ -31,7 +31,9 @@ if (!apps.length) {
 const firestore = getFirestore(); // Firestoreのインスタンスを取得
 
 const auth = getAuth();
+
 const googleAuthProvider = new GoogleAuthProvider();
+
 
 export { auth, createUserWithEmailAndPassword };
 
@@ -72,6 +74,15 @@ export const createRoom = async (selectedUsers, roomName) => {
     });
 };
 
+export const messagesCreate = async (selectedUsers, messages) => {
+    // チャットルームを作成する処理
+    const messagesCreateRef = await addDoc(collection(db, "messages"), {
+        name: messages,
+        createdAt: serverTimestamp(),
+        memberIds: selectedUsers.map((user) => user.uid),
+    });
+};
+
 export const getAllUsers = async () => {
     let users = []
     const q = query(collection(db, "users"))
@@ -107,6 +118,7 @@ export const getRooms = async () => {
     }));
     return roomsList;
 };
+
 
 export const signOutUser = async () => {
     try {
