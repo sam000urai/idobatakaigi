@@ -18,6 +18,7 @@ function App() {
         <Route path="/room" element={<Room />} />
         <Route path="/createroom" element={<CreateRoom />} /> {/* ルート追加 */}
         <Route path="/chat/:roomId" element={<Chat />} />
+        <Route path="/chat/:messageId" element={<Chat />} />
       </Routes>
     </BrowserRouter>
   );

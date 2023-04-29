@@ -7,6 +7,7 @@ import * as React from 'react';
 import { selectUser } from '../features/userSlice';
 import { useAppSelector } from '../hooks/useRTK';
 
+
 export default function Appbar() {
     const user = useAppSelector(selectUser);
     return (
@@ -16,6 +17,9 @@ export default function Appbar() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Idobatakaigi for sam
                     </Typography>
+                    {user.uid && <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                        {user.uid}
+                    </Typography>}
                     <Avatar alt="user icon" src={user.photoUrl} />
                 </Toolbar>
             </AppBar>

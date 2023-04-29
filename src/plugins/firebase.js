@@ -1,8 +1,11 @@
 import { getApps, initializeApp } from 'firebase/app';
+
 import {
     collection, query, getDocs, setDoc, addDoc, where,
-    getFirestore, updateDoc, doc, deleteDoc, usersSnapshot, serverTimestamp,
+    getFirestore, updateDoc, doc, deleteDoc, usersSnapshot,
+    serverTimestamp, onSnapshot,
 } from "firebase/firestore";
+
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -65,6 +68,7 @@ export const createUser = async (email, password) => {
     }
 };
 
+
 export const createRoom = async (selectedUsers, roomName) => {
     // チャットルームを作成する処理
     const chatRoomRef = await addDoc(collection(db, "rooms"), {
@@ -91,6 +95,7 @@ export const sendMessageForFirebase = async (message, uid, roomId) => {
     }
     return returnObj;
 };
+
 
 export const getAllUsers = async () => {
     let users = []
@@ -225,5 +230,3 @@ export const newCreateInFirebase = async (firstName, lastName, birthYear) => {
     }
     return returnObj
 }
-
-
