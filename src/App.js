@@ -19,6 +19,8 @@ function App() {
         <Route path="/createroom" element={<CreateRoom />} /> {/* ルート追加 */}
         <Route path="/chat/:roomId" element={<Chat />} />
         <Route path="/chat/:messageId" element={<Chat />} />
+        <Route path="/chat/:getUsernameByUID" element={<Chat />} />
+
       </Routes>
     </BrowserRouter>
   );

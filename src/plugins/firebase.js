@@ -40,7 +40,8 @@ const googleAuthProvider = new GoogleAuthProvider();
 
 export { auth, createUserWithEmailAndPassword };
 
-export const createUser = async (email, password) => {
+
+export const createUser = async (displayName, email, password) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(
             auth,
@@ -52,11 +53,11 @@ export const createUser = async (email, password) => {
         console.log('create user success!!');
 
         // Firestoreにユーザー情報を保存
-        const userRef = doc(firestore, "users", user.uid); // usersコレクションの参照を取得
+        const userRef = doc(firestore, 'users', user.uid); // usersコレクションの参照を取得
         await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
-            displayName: user.displayName,
+            displayName: displayName,
             photoUrl: user.photoURL,
             // 他に保存したい情報があればここに追加
         });
@@ -96,6 +97,22 @@ export const sendMessageForFirebase = async (message, uid, roomId) => {
     return returnObj;
 };
 
+export const getUsernameByUID = async (uid) => {
+    console.log(uid)
+    try {
+        const q = query(collection(db, "users"), where("uid", "==", uid));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.id, " => ", doc.data());
+        });
+        // return username;
+    } catch (error) {
+        console.error('Failed to get username:', error);
+        return null;
+    }
+};
 
 export const getAllUsers = async () => {
     let users = []
@@ -134,16 +151,13 @@ export const getRooms = async () => {
 };
 
 
-export const getMessages = async () => {
+export const getMessages = async (roomId) => {
     const messages = [];
-    const querySnapshot = await getDocs(collection(db, 'messages'));
-    querySnapshot.forEach((doc) => {
-        messages.push({ id: doc.id, ...doc.data() });
+    const unsub = onSnapshot(doc(db, 'messages', roomId, 'message'), (doc) => {
+        console.log("Current data: ", doc.data());
     });
     return messages;
 };
-
-export { collection, onSnapshot };
 
 
 export const signOutUser = async () => {
