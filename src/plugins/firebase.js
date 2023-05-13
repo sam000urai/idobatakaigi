@@ -134,6 +134,18 @@ export const getRooms = async () => {
 };
 
 
+export const getMessages = async () => {
+    const messages = [];
+    const querySnapshot = await getDocs(collection(db, 'messages'));
+    querySnapshot.forEach((doc) => {
+        messages.push({ id: doc.id, ...doc.data() });
+    });
+    return messages;
+};
+
+export { collection, onSnapshot };
+
+
 export const signOutUser = async () => {
     try {
         signOut(auth).then(() => {
