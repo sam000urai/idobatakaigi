@@ -4,7 +4,7 @@ import { sendMessageForFirebase, db, getUsernameByUID } from '../plugins/firebas
 import { Link, useParams } from 'react-router-dom';
 import { selectUser } from '../features/userSlice';
 import { useAppSelector } from '../hooks/useRTK';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
 const Chat = ({ }) => {
     const [text, setText] = useState('');
@@ -24,7 +24,10 @@ const Chat = ({ }) => {
 
     useEffect(() => {
         const messages = [];
-        const q = query(collection(db, "messages", roomId, "message"));
+        const q = query(
+            collection(db, "messages", roomId, "message"),
+            orderBy("createdAt", "asc"));
+
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const tempmessage = [];
             querySnapshot.forEach((doc) => {

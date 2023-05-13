@@ -99,15 +99,16 @@ export const sendMessageForFirebase = async (message, uid, roomId) => {
 
 export const getUsernameByUID = async (uid) => {
     console.log(uid)
+    let username = ''
     try {
-        const q = query(collection(db, "users"), where("uid", "==", uid));
+        const q = await query(collection(db, "users"), where("uid", "==", uid));
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             console.log(doc.id, " => ", doc.data());
         });
-        // return username;
+        return username;
     } catch (error) {
         console.error('Failed to get username:', error);
         return null;
