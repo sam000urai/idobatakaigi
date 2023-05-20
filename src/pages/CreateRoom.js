@@ -4,12 +4,14 @@ import { useLoginCheck } from "../hooks/useLoginCheck";
 import Button from '@mui/material/Button';
 import Layout from '../components/Layout';
 import { signOutUser } from '../plugins/firebase';
+import { useNavigate } from 'react-router-dom';
 
 const CreateRoom = () => {
     const [users, setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [roomName, setRoomName] = useState('');
     const isLoggedIn = useLoginCheck();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -35,6 +37,7 @@ const CreateRoom = () => {
         };
         const roomId = await createRoom(selectedUsers, roomName);
         // チャットルーム作成後に、作成されたルームに遷移する処理を実装する
+        navigate('/room');
     };
 
     const handleRoomNameChange = (event) => {

@@ -13,6 +13,7 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup,
     GoogleAuthProvider,
+    updateProfile,
 } from 'firebase/auth';
 
 // Your web app's Firebase configuration
@@ -25,7 +26,6 @@ const firebaseConfig = {
     messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
     appId: process.env.REACT_APP_APP_ID,
 };
-
 
 const apps = getApps;
 if (!apps.length) {
@@ -49,6 +49,22 @@ export const createUser = async (displayName, email, password) => {
             password
         );
         const user = userCredential.user;
+
+        //** ユーザの名前をauthへ設定 */
+        updateProfile(user, {
+            displayName: displayName,
+        })
+            .then(() => {
+                // Profile updated!
+                console.log('Hello!! ', displayName);
+            })
+            .catch((error) => {
+                console.log(
+                    '🚀 ~ file: userRepository.ts:36 ~ UserRepository ~ .then ~ error',
+                    error.code
+                );
+            });
+
         console.log(user);
         console.log('create user success!!');
 
@@ -69,7 +85,6 @@ export const createUser = async (displayName, email, password) => {
     }
 };
 
-
 export const createRoom = async (selectedUsers, roomName) => {
     // チャットルームを作成する処理
     const chatRoomRef = await addDoc(collection(db, "rooms"), {
@@ -79,13 +94,18 @@ export const createRoom = async (selectedUsers, roomName) => {
     });
 };
 
-
-export const sendMessageForFirebase = async (message, uid, roomId) => {
+export const sendMessageForFirebase = async (
+    message,
+    displayName,
+    uid,
+    roomId
+) => {
     let returnObj = '';
     try {
         const docRef = await addDoc(collection(db, 'messages', roomId, 'message'), {
             message,
-            user: uid,
+            uid: uid,
+            displayName,
             createdAt: serverTimestamp(),
         });
         returnObj = 'send success';

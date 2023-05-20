@@ -17,8 +17,8 @@ export default function Appbar() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Idobatakaigi for sam
                     </Typography>
-                    {user.uid && <Typography variant="subtitle1" sx={{ mr: 2 }}>
-                        {user.uid}
+                    {user.displayName && <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                        {user.displayName}
                     </Typography>}
                     <Avatar alt="user icon" src={user.photoUrl} />
                 </Toolbar>

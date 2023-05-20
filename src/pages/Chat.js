@@ -18,7 +18,7 @@ const Chat = ({ }) => {
         if (text.trim() === '') {
             return;
         }
-        sendMessageForFirebase(text, user.uid, roomId);
+        sendMessageForFirebase(text, user.displayName, user.uid, roomId);
         setText('');
     };
 
@@ -50,7 +50,7 @@ const Chat = ({ }) => {
                 <ul> {/* メッセージを表示するためにul要素を追加 */}
                     {messages.map((message) => (
                         <li key={message.id}>
-                            {message.user}: {message.message}
+                            {message.displayName}: {message.message}
                         </li>
                     ))}
                 </ul>
