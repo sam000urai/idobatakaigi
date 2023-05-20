@@ -39,6 +39,7 @@ const Chat = ({ }) => {
             });
             setMessages(tempmessage)
         });
+
         return unsubscribe;
     }, []);
 
