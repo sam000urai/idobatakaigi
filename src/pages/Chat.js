@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import ChatCard from '../components/ChatCard';
 import { sendMessageForFirebase, db, getUsernameByUID } from '../plugins/firebase';
 import { Link, useParams } from 'react-router-dom';
 import { selectUser } from '../features/userSlice';
 import { useAppSelector } from '../hooks/useRTK';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+
 
 const Chat = ({ }) => {
     const [text, setText] = useState('');
@@ -50,7 +52,7 @@ const Chat = ({ }) => {
                 <ul> {/* メッセージを表示するためにul要素を追加 */}
                     {messages.map((message) => (
                         <li key={message.id}>
-                            {message.displayName}: {message.message}
+                            <ChatCard rid={message.displayName} cname={message.message} />
                         </li>
                     ))}
                 </ul>
