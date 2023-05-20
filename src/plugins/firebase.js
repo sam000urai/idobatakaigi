@@ -135,6 +135,30 @@ export const getUsernameByUID = async (uid) => {
     }
 };
 
+export const getRoomsByUID = async (uid) => {
+    try {
+        const q = query(collection(db, "rooms"));
+        const querySnapshot = await getDocs(q);
+
+        const rooms = [];
+        querySnapshot.forEach((doc) => {
+            const room = doc.data();
+            room.id = doc.id;
+
+            if (room.memberIds.includes(uid)) {
+                rooms.push(room);
+            }
+        });
+
+        return rooms;
+    } catch (error) {
+        console.error('Failed to get rooms:', error);
+        return [];
+    }
+};
+
+
+
 export const getAllUsers = async () => {
     let users = []
     const q = query(collection(db, "users"))
@@ -216,6 +240,17 @@ export const signInWithGoogle = async () => {
         const user = result.user;
         console.log(user);
         console.log('Google sign in success!!');
+
+        // Firestoreにユーザー情報を保存
+        const userRef = doc(firestore, 'users', user.uid); // usersコレクションの参照を取得
+        await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoUrl: user.photoURL,
+            // 他に保存したい情報があればここに追加
+        });
+
         return 'success';
     } catch (error) {
         console.log(error.message);

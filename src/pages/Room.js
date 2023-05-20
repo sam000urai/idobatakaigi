@@ -5,7 +5,7 @@ import Layout from '../components/Layout';
 import RoomCard from '../components/RoomCard';
 import '../styles/Room.css';
 import { useNavigate } from 'react-router-dom';
-import { createDataInFirebase, readData, readCollection, updateData, deleteData, signOutUser, myDataCreateInFirebase, newCreateInFirebase, getRooms } from '../plugins/firebase';
+import { createDataInFirebase, readData, readCollection, updateData, deleteData, signOutUser, myDataCreateInFirebase, newCreateInFirebase, getRooms, getRoomsByUID } from '../plugins/firebase';
 
 const Room = () => {
     const [roomsList, setRoomsList] = useState([]);
@@ -27,11 +27,13 @@ const Room = () => {
 
     useEffect(() => {
         const fetchRooms = async () => {
-            const rooms = await getRooms();
-            setRoomsList(rooms);
+            if (user) {
+                const rooms = await getRoomsByUID(user.uid);
+                setRoomsList(rooms);
+            }
         };
         fetchRooms();
-    }, []);
+    }, [user]);
 
     const handleClick = () => {
         signOutUser()

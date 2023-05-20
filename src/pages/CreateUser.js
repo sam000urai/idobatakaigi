@@ -2,7 +2,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createUser } from '../plugins/firebase';
+import { createUser, signInWithGoogle } from '../plugins/firebase';
 
 const CreateUser = () => {
     const [email, setEmail] = useState('');
@@ -22,6 +22,15 @@ const CreateUser = () => {
             navigate('/room');
         } else {
             setError('User作成に失敗しました。');
+        }
+    };
+
+    const handleGoogleSignIn = async () => {
+        const result = await signInWithGoogle();
+        if (result === "success") {
+            navigate('/room');
+        } else {
+            setError("Googleログインに失敗しました。");
         }
     };
 
@@ -53,8 +62,13 @@ const CreateUser = () => {
                 Create
             </Button>
             <br />
+
+            <Button variant="outlined" onClick={handleGoogleSignIn}>Google Login</Button><br />
+
             <Link to="/">戻る</Link>
             {error && <p>{error}</p>}
+
+
         </div>
     );
 };
