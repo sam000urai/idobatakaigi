@@ -49,10 +49,14 @@ const Chat = ({ }) => {
             <Layout>
                 <h1>Room名： {roomId}</h1>
 
-                <ul> {/* メッセージを表示するためにul要素を追加 */}
+                <ul>
                     {messages.map((message) => (
                         <li key={message.id}>
-                            <ChatCard cid={message.displayName} cname={message.message} />
+                            <ChatCard
+                                cid={message.displayName}
+                                cname={message.message}
+                                isCurrentUser={message.uid === user.uid} // ログインユーザーかどうかを判定
+                            />
                         </li>
                     ))}
                 </ul>
