@@ -52,7 +52,7 @@ const Chat = ({ }) => {
                 <ul> {/* メッセージを表示するためにul要素を追加 */}
                     {messages.map((message) => (
                         <li key={message.id}>
-                            <ChatCard rid={message.displayName} cname={message.message} />
+                            <ChatCard cid={message.displayName} cname={message.message} />
                         </li>
                     ))}
                 </ul>

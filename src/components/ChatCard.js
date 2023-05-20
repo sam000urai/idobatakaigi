@@ -16,7 +16,7 @@ export default function ChatCard({ cid, cname }) {
                 </Typography>
                 <Typography variant="body2">
                     <br />
-                    Room id: {cid}
+                    Name: {cid}
                 </Typography>
             </CardContent>
 
