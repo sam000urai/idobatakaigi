@@ -5,12 +5,13 @@ import { sendMessageForFirebase, db, getUsernameByUID } from '../plugins/firebas
 import { Link, useParams } from 'react-router-dom';
 import { selectUser } from '../features/userSlice';
 import { useAppSelector } from '../hooks/useRTK';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit, doc } from 'firebase/firestore';
 
 
 const Chat = ({ }) => {
     const [text, setText] = useState('');
     const [messages, setMessages] = useState([]); // messagesをstateとして追加
+    const [roomName, setRoomName] = useState(''); // Roomの名前をstateとして追加
     let { roomId } = useParams();
     const user = useAppSelector(selectUser);
 
@@ -21,34 +22,45 @@ const Chat = ({ }) => {
             return;
         }
         sendMessageForFirebase(text, user.displayName, user.uid, roomId);
-        setText('');
+        setText(''); // メッセージ送信後にテキストをクリアする
     };
 
     useEffect(() => {
-        const messages = [];
-        const q = query(
-            collection(db, "messages", roomId, "message"),
-            orderBy("createdAt", "asc"));
+        const unsubscribeMessages = onSnapshot(
+            query(
+                collection(db, "messages", roomId, "message"),
+                orderBy("createdAt", "asc")
+            ),
+            (querySnapshot) => {
+                const tempmessage = [];
+                querySnapshot.forEach((doc) => {
+                    const username = getUsernameByUID(user.uid);
+                    console.log(username);
+                    tempmessage.push(doc.data());
+                });
+                setMessages(tempmessage);
+            }
+        );
 
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const tempmessage = [];
-            querySnapshot.forEach((doc) => {
-                const username = getUsernameByUID(user.uid); // ユーザー名を取得
-                console.log(username)
-                tempmessage.push(doc.data());
-            });
-            setMessages(tempmessage)
-        });
+        const unsubscribeRoomName = onSnapshot(
+            doc(db, "rooms", roomId),
+            (docSnapshot) => {
+                setRoomName(docSnapshot.data().name);
+            }
+        );
 
-        return unsubscribe;
-    }, []);
+        return () => {
+            unsubscribeMessages();
+            unsubscribeRoomName();
+        };
+    }, [roomId, user.uid]);
 
     console.log()
 
     return (
         <div>
             <Layout>
-                <h1>Room名： {roomId}</h1>
+                <h1>Room名： {roomName}</h1>
 
                 <ul>
                     {messages.map((message) => (
@@ -57,6 +69,7 @@ const Chat = ({ }) => {
                                 cid={message.displayName}
                                 cname={message.message}
                                 isCurrentUser={message.uid === user.uid} // ログインユーザーかどうかを判定
+                                timestamp={message.createdAt} // 投稿時間を渡す
                             />
                         </li>
                     ))}
