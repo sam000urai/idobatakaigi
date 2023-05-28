@@ -6,31 +6,27 @@ import { Link, useParams } from 'react-router-dom';
 import { selectUser } from '../features/userSlice';
 import { useAppSelector } from '../hooks/useRTK';
 import { collection, onSnapshot, query, orderBy, limit, doc } from 'firebase/firestore';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 
-
-const Chat = ({ }) => {
+const Chat = () => {
     const [text, setText] = useState('');
-    const [messages, setMessages] = useState([]); // messagesをstateとして追加
-    const [roomName, setRoomName] = useState(''); // Roomの名前をstateとして追加
+    const [messages, setMessages] = useState([]);
+    const [roomName, setRoomName] = useState('');
     let { roomId } = useParams();
     const user = useAppSelector(selectUser);
-
-    console.log(user)
 
     const sendMessage = () => {
         if (text.trim() === '') {
             return;
         }
         sendMessageForFirebase(text, user.displayName, user.uid, roomId);
-        setText(''); // メッセージ送信後にテキストをクリアする
+        setText('');
     };
 
     useEffect(() => {
         const unsubscribeMessages = onSnapshot(
-            query(
-                collection(db, "messages", roomId, "message"),
-                orderBy("createdAt", "asc")
-            ),
+            query(collection(db, 'messages', roomId, 'message'), orderBy('createdAt', 'asc')),
             (querySnapshot) => {
                 const tempmessage = [];
                 querySnapshot.forEach((doc) => {
@@ -42,12 +38,9 @@ const Chat = ({ }) => {
             }
         );
 
-        const unsubscribeRoomName = onSnapshot(
-            doc(db, "rooms", roomId),
-            (docSnapshot) => {
-                setRoomName(docSnapshot.data().name);
-            }
-        );
+        const unsubscribeRoomName = onSnapshot(doc(db, 'rooms', roomId), (docSnapshot) => {
+            setRoomName(docSnapshot.data().name);
+        });
 
         return () => {
             unsubscribeMessages();
@@ -55,30 +48,30 @@ const Chat = ({ }) => {
         };
     }, [roomId, user.uid]);
 
-    console.log()
-
     return (
         <div>
             <Layout>
                 <h1>Room名： {roomName}</h1>
 
-                <ul>
+                <Grid container spacing={2}>
                     {messages.map((message) => (
-                        <li key={message.id}>
+                        <Grid item xs={12} key={message.id}>
                             <ChatCard
                                 cid={message.displayName}
                                 cname={message.message}
-                                isCurrentUser={message.uid === user.uid} // ログインユーザーかどうかを判定
-                                timestamp={message.createdAt} // 投稿時間を渡す
+                                isCurrentUser={message.uid === user.uid}
+                                timestamp={message.createdAt}
                             />
-                        </li>
+                        </Grid>
                     ))}
-                </ul>
+                </Grid>
 
-                <textarea value={text} onChange={(e) => setText(e.target.value)} />
-                <button onClick={sendMessage}>Send</button>
-                <Link to='/' >ROOM一覧に戻る</Link>
+                <Box mt={2} display="flex" justifyContent="center">
+                    <textarea value={text} onChange={(e) => setText(e.target.value)} />
+                    <button onClick={sendMessage}>Send</button>
+                </Box>
 
+                <Link to="/">ROOM一覧に戻る</Link>
             </Layout>
         </div>
     );
